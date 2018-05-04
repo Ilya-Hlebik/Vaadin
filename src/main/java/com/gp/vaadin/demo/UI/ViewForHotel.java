@@ -1,4 +1,4 @@
-package com.gp.vaadin.demo;
+package com.gp.vaadin.demo.UI;
 
 
 import com.gp.vaadin.demo.Entity.Hotel;

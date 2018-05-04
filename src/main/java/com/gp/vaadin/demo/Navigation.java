@@ -1,6 +1,8 @@
 package com.gp.vaadin.demo;
 
 
+import com.gp.vaadin.demo.UI.ViewForCategory;
+import com.gp.vaadin.demo.UI.ViewForHotel;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.navigator.Navigator;
