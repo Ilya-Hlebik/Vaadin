@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+
+    <changeSet author="melamory" id="init">
+        <!-- ================================= Hotels ================================= -->
+        <createTable tableName="HOTEL">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="OPTLOCK" type="BIGINT"/>
+            <column name="NAME" type="VARCHAR(255)"/>
+            <column name="ADDRESS" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="RATING" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="OPERATES_FROM" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CATEGORY" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="URL" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="ilya" id="creation categories table" >
+        <!-- ============================ Add categories table ============================== -->
+        <createTable tableName="CATEGORIES">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="OPTLOCK" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NAME" type="VARCHAR(255)"/>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="CATEGORIES"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="modify hotels table" author="ilya">
+        <!-- =========================== Modification for Hotels table =================== -->
+        <addColumn tableName="HOTEL">
+            <column name="DESCRIPTION" type="VARCHAR(255)"/>
+        </addColumn>
+        <renameColumn columnDataType="BIGINT" newColumnName="CATEGORY_ID" oldColumnName="CATEGORY" tableName="HOTEL"/>
+        <addNotNullConstraint columnDataType="INT" columnName="OPTLOCK" defaultNullValue="0" tableName="HOTEL"/>
+        <addForeignKeyConstraint baseColumnNames="CATEGORY_ID" baseTableName="HOTEL" constraintName="FK_HOTEL_CATEGORY"
+                                 onDelete="SET NULL" onUpdate="NO ACTION" referencedColumnNames="ID"
+                                 referencedTableName="CATEGORIES"/>
+
+        <rollback>
+            <renameColumn columnDataType="VARCHAR(255)" newColumnName="CATEGORY" oldColumnName="CATEGORY_ID"
+                          tableName="HOTEL"/>
+            <dropColumn columnName="DESCRIPTION" tableName="HOTEL"/>
+            <dropNotNullConstraint tableName="HOTEL" columnName="OPTLOCK"/>
+            <dropForeignKeyConstraint baseTableName="HOTEL" constraintName="FK_HOTEL_CATEGORY"/>
+        </rollback>
+    </changeSet>
+
+    <!-- ================================== Fill categories =================================== -->
+    <changeSet id="fill categories table with some data" author="ilya" >
+        <insert tableName="CATEGORIES">
+            <column name="ID">1</column>
+            <column name="OPTLOCK">0</column>
+            <column name="NAME">Hotel</column>
+        </insert>
+        <insert tableName="CATEGORIES">
+            <column name="ID">2</column>
+            <column name="OPTLOCK">0</column>
+            <column name="NAME">Hostel</column>
+        </insert>
+        <insert tableName="CATEGORIES">
+            <column name="ID">3</column>
+            <column name="OPTLOCK">0</column>
+            <column name="NAME">GuestHouse</column>
+        </insert>
+        <insert tableName="CATEGORIES">
+            <column name="ID">4</column>
+            <column name="OPTLOCK">0</column>
+            <column name="NAME">Appartments</column>
+        </insert>
+
+        <rollback>
+            <delete tableName="CATEGORIES">
+                <where>ID BETWEEN 1 AND 4</where>
+            </delete>
+        </rollback>
+    </changeSet>
+
+
+    <!-- ================================= Fill hotel ================================== -->
+    <changeSet author="ilya" id="fill hotel table with some data">
+        <insert tableName="HOTEL">
+            <column name="ID">1</column>
+            <column name="NAME">3 Nagas Luang Prabang - MGallery by Sofitel</column>
+            <column name="ADDRESS">Vat Nong Village, Sakkaline Road, Democratic Republic Lao, 06000 Luang Prabang, Laos</column>
+            <column name="RATING">4</column>
+            <column name="OPTLOCK">0</column>
+            <column name="OPERATES_FROM">1521031111111</column>
+            <column name="CATEGORY_ID">4</column>
+            <column name="DESCRIPTION">Hotel 1</column>
+            <column name="URL">https://www.booking.com/hotel/la/3-nagas-luang-prabang-by-accor.en-gb.html</column>
+        </insert>
+        <insert tableName="HOTEL">
+            <column name="ID">2</column>
+            <column name="NAME">Abby Boutique Guesthouse</column>
+            <column name="ADDRESS">Ban Sawang , 01000 Vang Vieng, Laos</column>
+            <column name="RATING">1</column>
+            <column name="OPTLOCK">0</column>
+            <column name="OPERATES_FROM">1521034111111</column>
+            <column name="CATEGORY_ID">3</column>
+            <column name="DESCRIPTION">Hotel 2</column>
+            <column name="URL">https://www.booking.com/hotel/la/abby-boutique-guesthouse.en-gb.html</column>
+        </insert>
+        <insert tableName="HOTEL">
+            <column name="ID">3</column>
+            <column name="NAME">Bountheung Guesthouse</column>
+            <column name="ADDRESS">Ban Tha Heua, 01000 Vang Vieng, Laos</column>
+            <column name="RATING">1</column>
+            <column name="OPTLOCK">0</column>
+            <column name="OPERATES_FROM">1521034111111</column>
+            <column name="CATEGORY_ID">2</column>
+            <column name="DESCRIPTION">Hotel 3</column>
+            <column name="URL">https://www.booking.com/hotel/la/bountheung-guesthouse.en-gb.html</column>
+        </insert>
+        <insert tableName="HOTEL">
+            <column name="ID">4</column>
+            <column name="NAME">Chalouvanh Hotel</column>
+            <column name="ADDRESS">13 road, Ban Phonesavanh, Pakse District, 01000 Pakse, Laos</column>
+            <column name="OPTLOCK">0</column>
+            <column name="RATING">2</column>
+            <column name="OPERATES_FROM">1521034111111</column>
+            <column name="CATEGORY_ID">2</column>
+            <column name="DESCRIPTION">Hotel 4</column>
+            <column name="URL">https://www.booking.com/hotel/la/chalouvanh.en-gb.html</column>
+        </insert>
+        <insert tableName="HOTEL">
+            <column name="ID">5</column>
+            <column name="NAME">Chaluenxay Villa</column>
+            <column name="ADDRESS">Sakkarin Road Ban Xienthong Luang Prabang Laos, 06000 Luang Prabang, Laos</column>
+            <column name="OPTLOCK">0</column>
+            <column name="RATING">3</column>
+            <column name="OPERATES_FROM">1521034111111</column>
+            <column name="CATEGORY_ID">3</column>
+            <column name="DESCRIPTION">Hotel 5</column>
+            <column name="URL">https://www.booking.com/hotel/la/chaluenxay-villa.en-gb.html</column>
+        </insert>
+        <insert tableName="HOTEL">
+            <column name="ID">6</column>
+            <column name="NAME">Dream Home Hostel 1</column>
+            <column name="ADDRESS">049 Sihome Road, Ban Sihome, 01000 Vientiane, Laos</column>
+            <column name="OPTLOCK">0</column>
+            <column name="RATING">1</column>
+            <column name="OPERATES_FROM">1521034111111</column>
+            <column name="CATEGORY_ID">4</column>
+            <column name="DESCRIPTION">Hotel 6</column>
+            <column name="URL">https://www.booking.com/hotel/la/getaway-backpackers-hostel.en-gb.html</column>
+        </insert>
+        <insert tableName="HOTEL">
+            <column name="ID">7</column>
+            <column name="NAME">Inpeng Hotel and Resort</column>
+            <column name="ADDRESS">406 T4 Road, Donekoy Village, Sisattanak District, 01000 Vientiane, Laos</column>
+            <column name="OPTLOCK">0</column>
+            <column name="RATING">2</column>
+            <column name="OPERATES_FROM">1521034111111</column>
+            <column name="CATEGORY_ID">1</column>
+            <column name="DESCRIPTION">Hotel 7</column>
+            <column name="URL">https://www.booking.com/hotel/la/inpeng-and-resort.en-gb.html</column>
+        </insert>
+        <insert tableName="HOTEL">
+            <column name="ID">8</column>
+            <column name="NAME">Jammee Guesthouse II</column>
+            <column name="ADDRESS">Vang Vieng, 01000 Vang Vieng, Laos</column>
+            <column name="OPTLOCK">0</column>
+            <column name="RATING">2</column>
+            <column name="OPERATES_FROM">1521034111111</column>
+            <column name="CATEGORY_ID">2</column>
+            <column name="DESCRIPTION">Hotel 8</column>
+            <column name="URL">https://www.booking.com/hotel/la/jammee-guesthouse-vang-vieng1.en-gb.html</column>
+        </insert>
+        <insert tableName="HOTEL">
+            <column name="ID">9</column>
+            <column name="NAME">Khemngum Guesthouse 3</column>
+            <column name="ADDRESS">Ban Thalat No.10 Road Namngum Laos, 01000 Thalat, Laos</column>
+            <column name="OPTLOCK">0</column>
+            <column name="RATING">2</column>
+            <column name="OPERATES_FROM">1521034111111</column>
+            <column name="CATEGORY_ID">3</column>
+            <column name="DESCRIPTION">Hotel 9</column>
+            <column name="URL">https://www.booking.com/hotel/la/khemngum-guesthouse-3.en-gb.html</column>
+        </insert>
+        <insert tableName="HOTEL">
+            <column name="ID">10</column>
+            <column name="NAME">Khongview Guesthouse</column>
+            <column name="ADDRESS">Ban Klang Khong, Khong District, 01000 Muang Không, Laos</column>
+            <column name="OPTLOCK">0</column>
+            <column name="RATING">2</column>
+            <column name="OPERATES_FROM">1521034111111</column>
+            <column name="CATEGORY_ID">1</column>
+            <column name="DESCRIPTION">Hotel 10</column>
+            <column name="URL">https://www.booking.com/hotel/la/khongview-guesthouse.en-gb.html</column>
+        </insert>
+        <insert tableName="HOTEL">
+            <column name="ID">11</column>
+            <column name="NAME">Kong Kham Pheng Guesthouse</column>
+            <column name="ADDRESS">Mixay Village, Paksan district, Bolikhamxay province, 01000 Muang Pakxan, Laos</column>
+            <column name="OPTLOCK">0</column>
+            <column name="RATING">1</column>
+            <column name="OPERATES_FROM">1521034111111</column>
+            <column name="CATEGORY_ID">2</column>
+            <column name="DESCRIPTION">Hotel 11</column>
+            <column name="URL">https://www.booking.com/hotel/la/kong-kham-pheng-guesthouse.en-gb.html</column>
+        </insert>
+        <insert tableName="HOTEL">
+            <column name="ID">12</column>
+            <column name="NAME">Laos Haven Hotel and Spa</column>
+            <column name="ADDRESS">047 Ban Viengkeo, Vang Vieng , 01000 Vang Vieng, Laos</column>
+            <column name="OPTLOCK">0</column>
+            <column name="RATING">2</column>
+            <column name="OPERATES_FROM">1521034111111</column>
+            <column name="CATEGORY_ID">3</column>
+            <column name="DESCRIPTION">Hotel 12</column>
+            <column name="URL">https://www.booking.com/hotel/la/laos-haven.en-gb.html</column>
+        </insert>
+        <insert tableName="HOTEL">
+            <column name="ID">13</column>
+            <column name="NAME">Lerdkeo Sunset Guesthouse</column>
+            <column name="ADDRESS">Muang Ngoi Neua,Ban Ngoy-Nua, 01000 Muang Ngoy, Laos</column>
+            <column name="OPTLOCK">0</column>
+            <column name="RATING">1</column>
+            <column name="OPERATES_FROM">1521034111111</column>
+            <column name="CATEGORY_ID">4</column>
+            <column name="DESCRIPTION">Hotel 13</column>
+            <column name="URL">https://www.booking.com/hotel/la/lerdkeo-sunset-guesthouse.en-gb.html</column>
+        </insert>
+
+        <rollback>
+            <delete tableName="HOTEL">
+                <where>ID BETWEEN 1 AND 13</where>
+            </delete>
+        </rollback>
+    </changeSet>
+    <changeSet author="ilya" id="fill hotel table with new data">
+        <insert tableName="HOTEL">
+            <column name="ID">14</column>
+            <column name="NAME">Luangprabang River Lodge Boutique 1</column>
+            <column name="ADDRESS">Mekong River Road, 06000 Luang Prabang, Laos</column>
+            <column name="OPTLOCK">0</column>
+            <column name="RATING">3</column>
+            <column name="OPERATES_FROM">1521034111111</column>
+            <column name="CATEGORY_ID">4</column>
+            <column name="DESCRIPTION">Hotel 14</column>
+            <column name="URL">https://www.booking.com/hotel/la/luangprabang-river-lodge.en-gb.html</column>
+        </insert>
+        <insert tableName="HOTEL">
+            <column name="ID">15</column>
+            <column name="NAME">Manichan Guesthouse</column>
+            <column name="ADDRESS">Ban Pakham Unit 4/143, 60000 Luang Prabang, Laos</column>
+            <column name="OPTLOCK">0</column>
+            <column name="RATING">2</column>
+            <column name="OPERATES_FROM">1521034111111</column>
+            <column name="CATEGORY_ID">1</column>
+            <column name="DESCRIPTION">Hotel 15</column>
+            <column name="URL">https://www.booking.com/hotel/la/manichan-guesthouse.en-gb.html</column>
+        </insert>
+        <insert tableName="HOTEL">
+            <column name="ID">16</column>
+            <column name="NAME">Mixok Inn</column>
+            <column name="ADDRESS">188 Sethathirate Road , Mixay Village , Chanthabuly District, 01000 Vientiane, Laos
+            </column>
+            <column name="OPTLOCK">0</column>
+            <column name="RATING">2</column>
+            <column name="OPERATES_FROM">1521034111111</column>
+            <column name="CATEGORY_ID">2</column>
+            <column name="DESCRIPTION">Hotel 16</column>
+            <column name="URL">https://www.booking.com/hotel/la/mixok-inn.en-gb.html</column>
+        </insert>
+
+        <rollback>
+            <delete tableName="HOTEL">
+                <where>ID BETWEEN 14 AND 16</where>
+            </delete>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

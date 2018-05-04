@@ -1,0 +1,11 @@
+com\gp\vaadin\demo\HotelCategoryEditForm.class
+com\gp\vaadin\demo\ViewForHotel.class
+com\gp\vaadin\demo\Services\HotelService.class
+com\gp\vaadin\demo\Services\CategoryService.class
+com\gp\vaadin\demo\ViewForCategory.class
+com\gp\vaadin\demo\HotelEditForm.class
+com\gp\vaadin\demo\Entity\Hotel.class
+com\gp\vaadin\demo\Navigation$DemoUIServlet.class
+com\gp\vaadin\demo\Navigation.class
+com\gp\vaadin\demo\ComponentMenu.class
+com\gp\vaadin\demo\Entity\Category.class
