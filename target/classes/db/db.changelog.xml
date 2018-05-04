@@ -49,7 +49,7 @@
         </rollback>
     </changeSet>
 
-    <changeSet id="modify hotels table" author="ilya">
+    <changeSet author="ilya" id="modify hotels table" >
         <!-- =========================== Modification for Hotels table =================== -->
         <addColumn tableName="HOTEL">
             <column name="DESCRIPTION" type="VARCHAR(255)"/>
@@ -70,7 +70,7 @@
     </changeSet>
 
     <!-- ================================== Fill categories =================================== -->
-    <changeSet id="fill categories table with some data" author="ilya" >
+    <changeSet author="ilya" id="fill categories table with some data"  >
         <insert tableName="CATEGORIES">
             <column name="ID">1</column>
             <column name="OPTLOCK">0</column>
