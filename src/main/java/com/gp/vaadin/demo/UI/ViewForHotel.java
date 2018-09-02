@@ -15,16 +15,18 @@ import java.util.Set;
 
 public class ViewForHotel extends VerticalLayout implements View {
 
-    final HotelService hotelService = HotelService.getInstance();
-    final TextField filterByName = new TextField();
-    final TextField filterByAddress = new TextField();
-    final Button addHotel = new Button("Add hotel");
-    final Button deleteHotel = new Button("Delete hotel");
-    final Button editHotel = new Button("Edit hotel");
+    private final HotelService hotelService = HotelService.getInstance();
+    private final TextField filterByName = new TextField();
+    private final TextField filterByAddress = new TextField();
+    private final Button addHotel = new Button("Add hotel");
+    private final Button deleteHotel = new Button("Delete hotel");
+    private final Button editHotel = new Button("Edit hotel");
+    private final Button bulkUpdateBtn = new Button("Bulk Update");
+    private final ViewForPopUp viewForPopUp = new ViewForPopUp(this);
 
-    final Grid<Hotel> hotelGrid = new Grid<>();
-    final HotelEditForm hotelEditForm = new HotelEditForm(this);
-    final CategoryService categoryService = CategoryService.getInstance();
+    private final Grid<Hotel> hotelGrid = new Grid<>();
+    private final HotelEditForm hotelEditForm = new HotelEditForm(this);
+    private final CategoryService categoryService = CategoryService.getInstance();
 
 
     public ViewForHotel() {
@@ -55,6 +57,10 @@ public class ViewForHotel extends VerticalLayout implements View {
             hotelEditForm.setHotel(hotel);
         });
 
+        bulkUpdateBtn.addClickListener(e -> {
+            viewForPopUp.showPopUp(hotelGrid.getSelectedItems());
+        });
+
         hotelGrid.addColumn(Hotel::getName).setCaption("Name");
         hotelGrid.addColumn(Hotel::getAddress).setCaption("Address");
         hotelGrid.addColumn(Hotel::getRating).setCaption("Rating");
@@ -72,21 +78,26 @@ public class ViewForHotel extends VerticalLayout implements View {
             if (selectedHotels != null && selectedHotels.size() == 1) {
                 deleteHotel.setEnabled(true);
                 editHotel.setEnabled(true);
+                bulkUpdateBtn.setEnabled(false);
             } else if (selectedHotels != null && selectedHotels.size() > 1) {
                 deleteHotel.setEnabled(true);
                 editHotel.setEnabled(false);
+                bulkUpdateBtn.setEnabled(true);
             } else {
                 deleteHotel.setEnabled(false);
                 editHotel.setEnabled(false);
+                bulkUpdateBtn.setEnabled(false);
                 hotelEditForm.setVisible(false);
             }
         });
 
-        HorizontalLayout control = new HorizontalLayout(filterByName, filterByAddress, addHotel, deleteHotel, editHotel);
+        HorizontalLayout control = new HorizontalLayout(filterByName, filterByAddress, addHotel, deleteHotel, editHotel, bulkUpdateBtn);
         HorizontalLayout content = new HorizontalLayout(hotelGrid, hotelEditForm);
 
+        bulkUpdateBtn.setEnabled(false);
         deleteHotel.setEnabled(false);
         editHotel.setEnabled(false);
+        viewForPopUp.setPopupVisible(false);
 
         setSpacing(true);
         setMargin(false);
@@ -98,9 +109,14 @@ public class ViewForHotel extends VerticalLayout implements View {
         content.setHeight(32, Unit.REM);
         content.setExpandRatio(hotelGrid, 229);
         content.setExpandRatio(hotelEditForm, 92);
-        addComponents(control, content);
+        addComponents(control, content, viewForPopUp);
+        setComponentAlignment(viewForPopUp, Alignment.MIDDLE_CENTER);
 
+        updateList();
+    }
 
+    public void onUpdateHotels(Set<Hotel> hotels) {
+        hotelService.updateHotels(hotels);
         updateList();
     }
 

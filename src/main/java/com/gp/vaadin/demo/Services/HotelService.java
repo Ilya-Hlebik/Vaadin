@@ -36,6 +36,12 @@ public class HotelService {
         } catch (Exception e) {}
     }
 
+    public void updateHotels(Iterable<Hotel> iterable) {
+        em.getTransaction().begin();
+        iterable.forEach(hotel -> em.merge(hotel));
+        em.getTransaction().commit();
+    }
+
     public List<Hotel> getAll(@NotNull String nameFilter, @NotNull String addressFilter) {
         TypedQuery<Hotel> query = em.createNamedQuery("Hotel.filter", Hotel.class);
         query.setParameter("filterByName", "%" + nameFilter.toLowerCase() + "%");
@@ -49,7 +55,9 @@ public class HotelService {
 
     public void delete(Iterable<Hotel> hotels) {
         em.getTransaction().begin();
-        hotels.forEach(hotel -> {em.remove(get(hotel.getId()));});
+        hotels.forEach(hotel -> em.remove(get(hotel.getId())));
         em.getTransaction().commit();
     }
+
+
 }

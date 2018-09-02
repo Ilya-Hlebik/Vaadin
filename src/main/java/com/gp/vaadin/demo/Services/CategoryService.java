@@ -1,10 +1,13 @@
 package com.gp.vaadin.demo.Services;
 
 import com.gp.vaadin.demo.Entity.Category;
+
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 import java.util.List;
+
+import static com.gp.vaadin.demo.Services.StaticFields.NO_CATEGORY;
 
 public class CategoryService {
 
@@ -39,10 +42,10 @@ public class CategoryService {
     }
 
     public String getCategoryName(Category category) {
-        if (category == null) return "No category";
+        if (category == null) return NO_CATEGORY;
 
         Category cat = get(category.getId());
-        return cat == null ? "No category" : cat.getName();
+        return cat == null ? NO_CATEGORY : cat.getName();
     }
 
     public Category get(long id) {

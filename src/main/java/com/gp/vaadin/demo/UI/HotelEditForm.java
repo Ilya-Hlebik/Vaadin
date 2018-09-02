@@ -15,17 +15,17 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Calendar;
 
+import static com.gp.vaadin.demo.Services.StaticFields.ENTER_NUMBER;
+
 public class HotelEditForm extends FormLayout {
 
-	TextField name = new TextField("Name");
-	TextField address = new TextField("Address");
-	TextField rating = new TextField("Rating");
-	DateField operatesFrom = new DateField("Date");
-	NativeSelect<Category> category = new NativeSelect<>("Category");
-	TextArea description = new TextArea("Description");
-	TextField url = new TextField("URL");
-	private Button save = new Button("Save");
-	private Button close = new Button("Close");
+	private TextField name = new TextField("Name");
+	private TextField address = new TextField("Address");
+	private TextField rating = new TextField("Rating");
+	private DateField operatesFrom = new DateField("Date");
+	private NativeSelect<Category> category = new NativeSelect<>("Category");
+	private TextArea description = new TextArea("Description");
+	private TextField url = new TextField("URL");
 
 	private ViewForHotel ui;
 	private HotelService hotelService = HotelService.getInstance();
@@ -37,6 +37,8 @@ public class HotelEditForm extends FormLayout {
 		this.ui = ui;
 		setMargin(true);
 		setVisible(false);
+		Button save = new Button("Save");
+		Button close = new Button("Close");
 		HorizontalLayout buttons = new HorizontalLayout(save, close);
 		buttons.setSpacing(true);
 
@@ -66,8 +68,8 @@ public class HotelEditForm extends FormLayout {
 	private void prepareFields() {
 		binder.forField(name).asRequired("Please enter a name").bind(Hotel::getName, Hotel::setName);
 		binder.forField(address).asRequired("Please enter a address").bind(Hotel::getAddress, Hotel::setAddress);
-		binder.forField(rating).asRequired("Please enter a rating").withValidator(e -> Integer.parseInt(e) >= 0 && Integer.parseInt(e) <= 5,"Enter number between 0 and 5").bind(this::getRating, this::setRating);
-		binder.forField(operatesFrom).asRequired("Please choose a date").withValidator(this::validateDate).bind(HotelEditForm::getDate, this::setDate);
+		binder.forField(rating).asRequired("Please enter a rating").withValidator(e -> Integer.parseInt(e) >= 0 && Integer.parseInt(e) <= 5,ENTER_NUMBER).bind(this::getRating, this::setRating);
+		binder.forField(operatesFrom).asRequired("Please choose a date").withValidator(HotelEditForm::validateDate).bind(HotelEditForm::getDate, this::setDate);
 		binder.forField(category).asRequired("Please choose a category").bind(Hotel::getCategory, Hotel::setCategory);
 		binder.forField(description).bind(Hotel::getDescription, Hotel::setDescription);
 		binder.forField(url).asRequired("Please enter a URL").bind(Hotel::getUrl, Hotel::setUrl);
@@ -79,7 +81,7 @@ public class HotelEditForm extends FormLayout {
 				.atZone(ZoneId.systemDefault()).toLocalDate();
 	}
 
-	public ValidationResult validateDate(LocalDate localDate, ValueContext valueContext) {
+	public static ValidationResult validateDate(LocalDate localDate, ValueContext valueContext) {
 		if (localDate.isBefore(LocalDate.now())) {
 			return ValidationResult.ok();
 		}
