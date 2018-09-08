@@ -7,6 +7,8 @@ import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class HotelService {
 
@@ -33,13 +35,15 @@ public class HotelService {
         }
         try {
             em.getTransaction().commit();
-        } catch (Exception e) {}
+        } catch (Exception e) {e.printStackTrace();}
     }
 
     public void updateHotels(Iterable<Hotel> iterable) {
         em.getTransaction().begin();
         iterable.forEach(hotel -> em.merge(hotel));
-        em.getTransaction().commit();
+        try {
+            em.getTransaction().commit();
+        } catch (Exception e) {e.printStackTrace();}
     }
 
     public List<Hotel> getAll(@NotNull String nameFilter, @NotNull String addressFilter) {
@@ -56,8 +60,13 @@ public class HotelService {
     public void delete(Iterable<Hotel> hotels) {
         em.getTransaction().begin();
         hotels.forEach(hotel -> em.remove(get(hotel.getId())));
-        em.getTransaction().commit();
+        try {
+            em.getTransaction().commit();
+        } catch (Exception e) {e.printStackTrace();}
     }
 
-
+    public List<Hotel> getAll() {
+        TypedQuery<Hotel> query = em.createNamedQuery("Hotel.getAll", Hotel.class);
+        return query.getResultList();
+    }
 }

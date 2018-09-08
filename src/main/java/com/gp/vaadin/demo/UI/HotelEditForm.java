@@ -14,6 +14,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Calendar;
+import java.util.List;
 
 import static com.gp.vaadin.demo.Services.StaticFields.ENTER_NUMBER;
 
@@ -26,7 +27,7 @@ public class HotelEditForm extends FormLayout {
 	private NativeSelect<Category> category = new NativeSelect<>("Category");
 	private TextArea description = new TextArea("Description");
 	private TextField url = new TextField("URL");
-
+	private PaymentForm paymentForm = new PaymentForm();
 	private ViewForHotel ui;
 	private HotelService hotelService = HotelService.getInstance();
 	private CategoryService categoryService = CategoryService.getInstance();
@@ -48,6 +49,8 @@ public class HotelEditForm extends FormLayout {
 		address.setDescription("Address of Hotel");
 		rating.setWidth(100, Unit.PERCENTAGE);
 		rating.setDescription("Rating of Hotel");
+		paymentForm.setWidth(100, Unit.PERCENTAGE);
+		paymentForm.setDescription("Payment method");
 		operatesFrom.setWidth(100, Unit.PERCENTAGE);
 		operatesFrom.setDescription("Date of Operates");
 		category.setWidth(100, Unit.PERCENTAGE);
@@ -57,7 +60,7 @@ public class HotelEditForm extends FormLayout {
 		url.setWidth(100, Unit.PERCENTAGE);
 		url.setDescription("URL of Hotel");
 
-		addComponents(name, address, rating, operatesFrom, category, description, url, buttons);
+		addComponents(name, address, rating, operatesFrom, category, paymentForm, description, url, buttons);
 
 	 	category.setItems(categoryService.getAll());
 		prepareFields();
@@ -70,9 +73,10 @@ public class HotelEditForm extends FormLayout {
 		binder.forField(address).asRequired("Please enter a address").bind(Hotel::getAddress, Hotel::setAddress);
 		binder.forField(rating).asRequired("Please enter a rating").withValidator(e -> Integer.parseInt(e) >= 0 && Integer.parseInt(e) <= 5,ENTER_NUMBER).bind(this::getRating, this::setRating);
 		binder.forField(operatesFrom).asRequired("Please choose a date").withValidator(HotelEditForm::validateDate).bind(HotelEditForm::getDate, this::setDate);
-		binder.forField(category).asRequired("Please choose a category").bind(Hotel::getCategory, Hotel::setCategory);
+		binder.forField(category).asRequired("Please choose a category").withNullRepresentation(null).bind(Hotel::getCategory, Hotel::setCategory);
 		binder.forField(description).bind(Hotel::getDescription, Hotel::setDescription);
 		binder.forField(url).asRequired("Please enter a URL").bind(Hotel::getUrl, Hotel::setUrl);
+		binder.forField(paymentForm).asRequired("Please choose a payment method").withValidator(paymentForm.getDefaultValidator()).bind(Hotel::getPayment, Hotel::setPayment);
 	}
 	public static LocalDate getDate(Hotel hotel) {
 		if (hotel.getOperatesFrom() == null) return null;
@@ -124,8 +128,10 @@ public class HotelEditForm extends FormLayout {
 			ui.updateList();
 			setVisible(false);
 		} else {
-			Notification.show("Unable to save! Please review errors and fix them.",
-					Notification.Type.ERROR_MESSAGE);
+			List<ValidationResult> validationResults =  binder.validate().getValidationErrors();
+			if (!validationResults.isEmpty()) {
+				Notification.show(validationResults.get(0).getErrorMessage(), Notification.Type.ERROR_MESSAGE);
+			}
 		}
 	}
 
@@ -133,7 +139,8 @@ public class HotelEditForm extends FormLayout {
 		this.hotel = hotel;
 		binder.readBean(this.hotel);
 		category.setItems(categoryService.getAll());
-		if (hotel.getCategory() != null) binder.readBean(this.hotel);
+		category.setItemCaptionGenerator((ItemCaptionGenerator<Category>) Category::getName);
+		binder.readBean(this.hotel);
 		setVisible(true);
 	}
 }

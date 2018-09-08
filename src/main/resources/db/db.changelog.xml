@@ -294,4 +294,16 @@
             </delete>
         </rollback>
     </changeSet>
+
+    <changeSet id="add column PAYMENT_TYPE and PRE_PAYMENT" author="ilya">
+        <addColumn tableName="HOTEL">
+            <column name="PAYMENT_TYPE" type="TINYINT"/>
+            <column name="PRE_PAYMENT" type="TINYINT"/>
+        </addColumn>
+        <rollback>
+            <dropColumn columnName="PAYMENT_TYPE" tableName="HOTEL"/>
+            <dropColumn columnName="PRE_PAYMENT" tableName="HOTEL"/>
+        </rollback>
+    </changeSet>
+
 </databaseChangeLog>

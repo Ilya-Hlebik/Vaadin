@@ -4,13 +4,16 @@ package com.gp.vaadin.demo.UI;
 import com.gp.vaadin.demo.Entity.Hotel;
 import com.gp.vaadin.demo.Services.CategoryService;
 import com.gp.vaadin.demo.Services.HotelService;
+import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.server.SerializablePredicate;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
-import java.util.List;
 import java.util.Set;
 
 public class ViewForHotel extends VerticalLayout implements View {
@@ -27,7 +30,7 @@ public class ViewForHotel extends VerticalLayout implements View {
     private final Grid<Hotel> hotelGrid = new Grid<>();
     private final HotelEditForm hotelEditForm = new HotelEditForm(this);
     private final CategoryService categoryService = CategoryService.getInstance();
-
+    private ListDataProvider<Hotel> hotelListDataProvider;
 
     public ViewForHotel() {
 
@@ -35,8 +38,8 @@ public class ViewForHotel extends VerticalLayout implements View {
         filterByName.setValueChangeMode(ValueChangeMode.LAZY);
         filterByAddress.setPlaceholder("filter by address");
         filterByAddress.setValueChangeMode(ValueChangeMode.LAZY);
-        filterByName.addValueChangeListener(e -> updateList());
-        filterByAddress.addValueChangeListener(e -> updateList());
+        filterByName.addValueChangeListener(e -> hotelFiler());
+        filterByAddress.addValueChangeListener(e -> hotelFiler());
 
         addHotel.addClickListener(e -> {
             hotelGrid.deselectAll();
@@ -67,7 +70,7 @@ public class ViewForHotel extends VerticalLayout implements View {
         hotelGrid.addColumn(this::getCategory).setCaption("Category");
         hotelGrid.addColumn(HotelEditForm::getDate).setCaption("Operates From");
         hotelGrid.addColumn(Hotel::getDescription).setCaption("Description");
-        Grid.Column<Hotel, String> htmlColumn = hotelGrid.addColumn(hotel ->
+        hotelGrid.addColumn(hotel ->
                         "<a href='" + hotel.getUrl() + "' target='_target'>hotel info</a>",
                 new HtmlRenderer()).setCaption("Url");
         hotelGrid.setSelectionMode(Grid.SelectionMode.MULTI);
@@ -99,16 +102,15 @@ public class ViewForHotel extends VerticalLayout implements View {
         editHotel.setEnabled(false);
         viewForPopUp.setPopupVisible(false);
 
-        setSpacing(true);
-        setMargin(false);
-        setWidth("100%");
-        hotelGrid.setSizeFull();
-        hotelEditForm.setSizeFull();
+
         content.setMargin(false);
+        content.setSpacing(false);
         content.setWidth("100%");
-        content.setHeight(32, Unit.REM);
-        content.setExpandRatio(hotelGrid, 229);
-        content.setExpandRatio(hotelEditForm, 92);
+        hotelGrid.setWidth("100%");
+        hotelEditForm.setMargin(new MarginInfo(false, false, false, true));
+        content.setExpandRatio(hotelGrid, 30);
+        content.setExpandRatio(hotelEditForm, 20);
+
         addComponents(control, content, viewForPopUp);
         setComponentAlignment(viewForPopUp, Alignment.MIDDLE_CENTER);
 
@@ -125,14 +127,25 @@ public class ViewForHotel extends VerticalLayout implements View {
         updateList();
     }
 
+    private boolean isPassed(String text, String filter) {
+        return filter == null || filter.isEmpty() || text.toLowerCase().contains(filter.toLowerCase());
+    }
 
     private String getCategory(Hotel hotel) {
         return categoryService.getCategoryName(hotel.getCategory());
     }
 
     public void updateList() {
-        List<Hotel> hotelList = hotelService.getAll(filterByName.getValue(), filterByAddress.getValue());
-        hotelGrid.setItems(hotelList);
+        hotelListDataProvider = DataProvider.ofCollection(hotelService.getAll());
+        hotelGrid.setDataProvider(hotelListDataProvider);
+    }
+
+    private void hotelFiler() {
+        hotelListDataProvider.setFilter((SerializablePredicate<Hotel>) h -> {
+            boolean name = isPassed(h.getName(), filterByName.getValue());
+            boolean address = isPassed(h.getAddress(), filterByAddress.getValue());
+            return (name && address);
+        });
     }
 
 }
