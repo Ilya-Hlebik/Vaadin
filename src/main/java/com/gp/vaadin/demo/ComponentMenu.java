@@ -1,5 +1,5 @@
 package com.gp.vaadin.demo;
- 
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.HorizontalLayout;
@@ -21,11 +21,12 @@ public class ComponentMenu extends CustomComponent {
         layout.setSizeUndefined();
         setCompositionRoot(layout);
     }
+
     private Command command() {
         return (Command) selectedItem -> {
-            if(selectedItem.getText().equals("Hotel"))
-            getUI().getNavigator().navigateTo("");
-            else if(Objects.equals(selectedItem.getText(), "Category"))     getUI().getNavigator().navigateTo("category");
+            if (selectedItem.getText().equals("Hotel"))
+                getUI().getNavigator().navigateTo("");
+            else if (Objects.equals(selectedItem.getText(), "Category")) getUI().getNavigator().navigateTo("category");
         };
     }
 }

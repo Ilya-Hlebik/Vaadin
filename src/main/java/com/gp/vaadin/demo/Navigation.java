@@ -28,13 +28,13 @@ public class Navigation extends UI {
     @Override
     protected void init(VaadinRequest vaadinRequest) {
         Navigator navigator = new Navigator(this, content);
-        navigator.addView("",  ViewForHotel.class);
+        navigator.addView("", ViewForHotel.class);
         navigator.addView("category", ViewForCategory.class);
         layout.setMargin(true);
         layout.setSpacing(true);
         content.setSizeFull();
         content.setMargin(false);
-        layout.addComponents(componentMenu,content);
+        layout.addComponents(componentMenu, content);
         setContent(layout);
     }
 

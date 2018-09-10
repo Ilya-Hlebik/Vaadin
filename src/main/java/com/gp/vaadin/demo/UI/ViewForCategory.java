@@ -22,7 +22,7 @@ public class ViewForCategory extends VerticalLayout implements View {
     final CategoryService categoryService = CategoryService.getInstance();
     final Grid<Category> listOfCategory = new Grid<>();
 
-    public ViewForCategory(){
+    public ViewForCategory() {
         addCategory.addClickListener(e -> {
             listOfCategory.deselectAll();
             categoryEditForm.setCategory(new Category());
@@ -63,8 +63,8 @@ public class ViewForCategory extends VerticalLayout implements View {
         setMargin(false);
         setWidth("100%");
 
-       HorizontalLayout control = new HorizontalLayout(addCategory, deleteCategory, editCategory);
-       HorizontalLayout content = new HorizontalLayout(listOfCategory, categoryEditForm);
+        HorizontalLayout control = new HorizontalLayout(addCategory, deleteCategory, editCategory);
+        HorizontalLayout content = new HorizontalLayout(listOfCategory, categoryEditForm);
 
         listOfCategory.setSizeFull();
         categoryEditForm.setVisible(false);

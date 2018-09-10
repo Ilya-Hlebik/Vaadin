@@ -46,7 +46,7 @@ public class HotelCategoryEditForm extends FormLayout {
             setVisible(false);
             viewForCategory.updateList();
         } else {
-            Notification.show("Please Enter a name of category  " , Notification.Type.ERROR_MESSAGE);
+            Notification.show("Please Enter a name of category  ", Notification.Type.ERROR_MESSAGE);
         }
     }
 

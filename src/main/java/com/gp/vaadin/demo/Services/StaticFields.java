@@ -12,8 +12,8 @@ public class StaticFields {
     public static final String NAME = "Name";
     public static final String OPERATES_FIELD_NAME = "operatesFrom";
     public static final String ENTER_NUMBER = "Enter number between 0 and 5";
-    public static final String PLEASE_SELECT_FIELD_FIRST ="Please, select field first!";
-    public static final String NO_CATEGORY ="No category";
+    public static final String PLEASE_SELECT_FIELD_FIRST = "Please, select field first!";
+    public static final String NO_CATEGORY = "No category";
     public static final String CREDIT_CARD = "Credit Card";
     public static final String CASH = "Cash";
     public static final String PAYMENT_METHOD = "PaymentMethod";
